@@ -17,9 +17,9 @@ const websiteSchema = new Schema({
   status: {
     type: String,
     enum: ["online", "offline", "unknown"],
-    default: "active",
+    default: "unknown",
   },
-  intrval: {
+  interval: {
     type: Number,
     default: 2,
   },

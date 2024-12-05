@@ -40,6 +40,19 @@ const userSchema = new mongoose.Schema({
       },
     },
   },
+},{
+  toJSON:{
+    transform:(doc,ret) => {
+      delete ret.password;
+      return ret;
+    }
+  },
+  toObject:{
+    transform:(doc,ret) => {
+      delete ret.password;
+      return ret;
+    }
+  }
 });
 
 userSchema.pre("save", async function (next) {
