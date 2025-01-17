@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { userSchema } = require("../schema");
@@ -7,7 +7,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, name: user.name, email: user.email },
     process.env.JWT_SECRET,
-    { expiresIn: "1hr" }
+    { expiresIn: "4hr" }
   );
 };
 
@@ -28,8 +28,8 @@ module.exports.registerUser = async (req, res) => {
     await user.save();
 
     const token = generateToken(user);
-
-    res.status(201).json({ message: "User registered successfully" }, user,token);
+    res.cookie('authToken', token, { httpOnly: true, secure: true, maxAge: 3600000 });
+    res.status(201).json({ message: "User registered successfully" , user, token });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
@@ -62,3 +62,25 @@ module.exports.loginUser = async (req, res) => {
 module.exports.logoutUser = async (req, res) => {
     res.status(200).json({ message: "Logged out successfully." });
 };
+
+// module.exports.updateUser = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     console.log(userId)
+//     const updates = req.body;
+
+//     const user = await User.findByIdAndUpdate(userId, updates, {
+//       new: true, // Return the updated user object
+//       runValidators: true, // Ensure validation rules are applied
+//     });
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
+
+//     res.status(200).json({ message: "User updated successfully", user });
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };

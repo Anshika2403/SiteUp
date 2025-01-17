@@ -14,6 +14,11 @@ const websiteSchema = new Schema({
     type: String,
     required: true,
   },
+  notifyType:{
+    type: String,
+    enum: ["email", "sms", "both"],
+    default: "email",
+  },
   status: {
     type: String,
     enum: ["online", "offline", "unknown"],
@@ -24,6 +29,17 @@ const websiteSchema = new Schema({
     default: 2,
   },
   lastChecked: {
+    type: Date,
+    default: Date.now,
+  },
+  monitoringActive: {
+    type: Boolean,
+    default: true,
+  },
+  analyticsId:{
+    type:String,
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
   },

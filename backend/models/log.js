@@ -15,6 +15,15 @@ const logSchema = new Schema({
     type: Number,
     required: true,
   },
+  fcp:{
+    type: Number,
+  },
+  lcp:{
+    type: Number,
+  },
+  message:{
+    type: String,
+  },
   checkedAt: {
     type: Date,
     default: Date.now,
