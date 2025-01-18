@@ -21,7 +21,6 @@ module.exports.getLogs = async (req, res) => {
     if (days) {
       const dateFrom = new Date();
       dateFrom.setDate(dateFrom.getDate() - parseInt(days, 10));
-      console.log(dateFrom);
       console.log(dateFrom.setDate(dateFrom.getDate() - parseInt(days, 10)));
       filter.checkedAt = { $gte: dateFrom };
     }
@@ -46,9 +45,6 @@ module.exports.getDailyUptime = async (req, res) => {
       websiteId: id,
       checkedAt: { $gte: startDate, $lt: endDate },
     });
-    // console.log(logs.length);
-    // console.log(logs);
-
     const result = calculateDailyUptimeAndDowntime(logs);
     res.status(200).json(result);
   } catch (error) {

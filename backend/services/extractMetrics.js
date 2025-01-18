@@ -24,7 +24,6 @@ async function extractMetrics(url) {
     
     try{
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
-        // await page.waitForTimeout(5000)
         
         const metrics = await page.evaluate(() => {
             const performanceEntries = performance.getEntriesByType('paint');

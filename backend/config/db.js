@@ -9,7 +9,7 @@ const connectDB = async () => {
     })
     .catch((err) => {
       console.error("MongoDB connection error:", err);
-      throw err; // Ensure the error is re-thrown for further handling
+      throw err; 
     });
 };
 

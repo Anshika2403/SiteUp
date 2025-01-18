@@ -16,7 +16,7 @@ let app = express();
 let upload = multer();
 
 app.use(cors({
-  origin: 'http://localhost:5173', // Frontend URL
+  origin: 'http://localhost:5173', 
 }));
 
 let PORT = process.env.PORT || 8080;

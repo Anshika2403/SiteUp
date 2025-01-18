@@ -13,15 +13,12 @@ module.exports.sendNotification = async (notificationData) => {
             if (!user || !user.email) {
                 throw new Error("User email not found.");
             }
-            const mail = user.email; // Extract email
-
-            // Fetch website name
+            const mail = user.email;
             const website = await Website.findById(notificationData.websiteId).select("name");
             if (!website || !website.name) {
                 throw new Error("Website name not found.");
             }
-            const name = website.name; // Extract name
-
+            const name = website.name; 
 
       await sendEmail({
         to: mail,

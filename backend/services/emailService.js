@@ -1,32 +1,3 @@
-// const nodemailer = require('nodemailer');
-
-// const transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//     }
-// });
-
-// async function sendEmail({to, subject, text}) {
-//     try{
-//         const mailOptions = {
-//             from: process.env.EMAIL_USER,
-//             to,
-//             subject,
-//             text,
-//         };
-
-//         const info = await transporter.sendMail(mailOptions);
-//         return true;
-//     }catch(err){
-//       console.error("Failed to send email:", err.message || err);
-//       throw new Error("Failed to send mail: " + err.message); // Provide more context in the error
-//     }
-// }
-
-// module.exports = sendEmail;
-
 const axios = require('axios');
 
 const sendEmail = async ({to,subject,text}) => {
@@ -47,8 +18,6 @@ const sendEmail = async ({to,subject,text}) => {
         'Content-Type': 'application/json',
       },
     });
-
-    console.log('Email sent successfully:', response.data); 
   } catch (error) {
     console.error('Error sending email:', error.response.data); 
   }

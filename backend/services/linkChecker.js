@@ -2,7 +2,6 @@ const puppeteer = require("puppeteer");
 const axios = require("axios");
 
 async function extractLinks(url) {
-  console.log("Extracting links from:", url);
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   try {
@@ -21,7 +20,6 @@ async function extractLinks(url) {
         })
         .filter((href) => href);
     });
-    console.log("Links extracted:", links);
     return links;
   } catch (err) {
     console.error("Error extracting links:", err);

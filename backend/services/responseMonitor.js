@@ -20,8 +20,6 @@ const monitorWebsite = async (website) => {
     const endTime = Date.now();
     const elapsedTime = endTime - startTime;
 
-    console.log("Response status:", response.status);
-
     if (response && response.status >= 200 && response.status < 300) {
 
       const result = await extractMetrics(website.url);
@@ -36,21 +34,16 @@ const monitorWebsite = async (website) => {
       });
       await log.save();
 
-      // const notifyType = await Notify.findOne({
-      //   userId: website.userId,
-      //   websiteId: website._id,
-      // });
-
       if (website.status !== "online") {
         website.status = "online";
         await website.save();
 
-        // await sendNotification({
-        //   userId: website.userId,
-        //   websiteId: website._id,
-        //   type: website.notifyType,
-        //   message: `Your website ${website.name} is now online`,
-        // });
+        await sendNotification({
+          userId: website.userId,
+          websiteId: website._id,
+          type: website.notifyType,
+          message: `Your website ${website.name} is now online`,
+        });
       }
 
       
@@ -93,22 +86,16 @@ async function handleWebsiteFailure(website, elapsedTime, errorDetail) {
 
   const message = `Website is offline. Reason: ${errorDetail}`;
 
-  // console.log("Website is offline");
   if (website.status == "offline") {
     website.status = "offline";
     await website.save();
 
-    // const notifyType = await Notify.findOne({
-    //   userId: website.userId,
-    //   websiteId: website._id,
-    // });
-
-    // await sendNotification({
-    //   userId: website.userId,
-    //   websiteId: website._id,
-    //   type: website.notifyType,
-    //   message: `The website ${website.name} is offline. Reason: ${errorDetail}`,
-    // });
+    await sendNotification({
+      userId: website.userId,
+      websiteId: website._id,
+      type: website.notifyType,
+      message: `The website ${website.name} is offline. Reason: ${errorDetail}`,
+    });
     return {
       message,
       status: 200,

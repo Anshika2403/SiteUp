@@ -1,7 +1,6 @@
 const { extractLinks, checkLinksResponse } = require("./linkChecker");
-const Log = require("../models/log");
-const Notify = require("../models/notify");
 const LinkLog = require("../models/linkLog");
+const Website = require("../models/website");
 const sendNotification = require("./notifyService");
 const { getCachedLinks, cacheLinks } = require("./cacheService");
 const extractMetrics = require("./extractMetrics");
@@ -12,14 +11,13 @@ const monitorLinks = async (url, websiteId, userId) => {
     if (!links) {
       links = await extractLinks(url);
       if (links.length === 0) {
-        console.log("No links found on the page");
         return;
       }
       await cacheLinks(url, links);
     }
 
+    const website = await Website.findById(websiteId);
     const linksStatuses = await checkLinksResponse(links);
-    // console.log("Links status:", linksStatuses);
 
     const monitoredLinks = [];
 
@@ -35,19 +33,14 @@ const monitorLinks = async (url, websiteId, userId) => {
           lcp: null,
           message: status === "Error" ? `Error with link ${link}` : null,
         });
-        // await log.save();
-        // console.log("Link status:", log);
+        await log.save();
 
-        // const notifyType = await Notify.findOne({
-        //   userId,
-        //   websiteId,
-        // });
-      //   await sendNotification({
-      //     userId,
-      //     websiteId,
-      //     type: notifyType,
-      //     message: `Link ${link} is not working. Status: ${status}`,
-      //   });
+        await sendNotification({
+          userId,
+          websiteId,
+          type: website.notifyType,
+          message: `Link ${link} is not working. Status: ${status}`,
+        });
       }
 
       const metrics = await extractMetrics(link);
@@ -55,13 +48,6 @@ const monitorLinks = async (url, websiteId, userId) => {
 
         linkDetails.fcp = metrics.fcp;
         linkDetails.lcp = metrics.lcp;
-
-        // const performanceLog = new PerformLog({
-        //   websiteId: websiteId,
-        //   fcp: metrics.fcp || 0,
-        //   lcp: metrics.lcp || 0,
-        // });
-        // await performanceLog.save();
 
         if (metrics.fcp > 4000) {
 
@@ -74,13 +60,12 @@ const monitorLinks = async (url, websiteId, userId) => {
             message: `Performance issue detected for ${link}. FCP=${metrics.fcp}ms, LCP=${metrics.lcp}ms.`,
           });
           await log.save();
-          const notifyType = await Notify.findOne({ userId, websiteId });
-          // await sendNotification({
-          //   userId: userId,
-          //   websiteId: websiteId,
-          //   type: notifyType.type,
-          //   message: `Performance issue detected for ${link}. FCP=${metrics.fcp}ms, LCP=${metrics.lcp}ms.`,
-          // });
+          await sendNotification({
+            userId: userId,
+            websiteId: websiteId,
+            type: website.notifyType,
+            message: `Performance issue detected for ${link}. FCP=${metrics.fcp}ms, LCP=${metrics.lcp}ms.`,
+          });
         }
       }
       monitoredLinks.push(linkDetails);
@@ -90,7 +75,5 @@ const monitorLinks = async (url, websiteId, userId) => {
     console.error("Error monitoring links:", error);
   }
 };
-
-
 
 module.exports =  monitorLinks;
