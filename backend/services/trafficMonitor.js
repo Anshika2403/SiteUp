@@ -5,7 +5,7 @@ async function fetchAnalyticsData(websiteId) {
   try {
     const website = await Website.findById(websiteId);
     if (!website) {
-      console.error("Website or AnalyticsId not found");
+      console.error("Website not found");
       return;
     }
 
@@ -20,10 +20,10 @@ async function fetchAnalyticsData(websiteId) {
       // Traffic data report
       analyticsData.properties.runReport({
         auth,
-        property: `properties/473081909`,
+        property: `properties/${website.analyticsId}`,
         requestBody: {
           dateRanges: [{
-            startDate: "1daysAgo",
+            startDate: "30daysAgo",
             endDate: "today"
           }],
           dimensions: [
@@ -50,7 +50,7 @@ async function fetchAnalyticsData(websiteId) {
       // User behavior report
       analyticsData.properties.runReport({
         auth,
-        property: `properties/473081909`,
+        property: `properties/${website.analyticsId}`,
         requestBody: {
           dateRanges: [{
             startDate: "1daysAgo",
@@ -72,7 +72,7 @@ async function fetchAnalyticsData(websiteId) {
       // Event tracking report
       analyticsData.properties.runReport({
         auth,
-        property: `properties/473081909`,
+        property: `properties/${website.analyticsId}`,
         requestBody: {
           dateRanges: [{
             startDate: "1daysAgo",
@@ -135,72 +135,13 @@ async function fetchAnalyticsData(websiteId) {
                     formattedData.traffic.dailyStats.length
     };
 
-    // return {
-    //   websiteName: website.name,
-    //   summary,
-    //   ...formattedData
-    // };
-
-    const last30Days = [...Array(30)].map((_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (29 - i));
-      return date.toISOString().split('T')[0];
-    });
-  
     return {
-      websiteName: "Example Website",
-      summary: {
-        totalSessions: 45280,
-        totalUsers: 32150,
-        totalPageViews: 128900,
-        avgBounceRate: 42.5
-      },
-      traffic: {
-        dailyStats: last30Days.map(date => ({
-          date,
-          device: ['mobile', 'desktop', 'tablet'][Math.floor(Math.random() * 3)],
-          sessions: Math.floor(Math.random() * 2000) + 1000,
-          activeUsers: Math.floor(Math.random() * 1500) + 800,
-          pageViews: Math.floor(Math.random() * 5000) + 2000,
-          bounceRate: Math.random() * 20 + 35
-        }))
-      },
-      userBehavior: {
-        byDevice: [
-          {
-            deviceCategory: "Desktop",
-            totalUsers: 15234,
-            averageSessionDuration: 285, // in seconds
-            engagedSessions: 12567,
-            pageViews: 45890
-          },
-          {
-            deviceCategory: "Mobile",
-            totalUsers: 28456,
-            averageSessionDuration: 164,
-            engagedSessions: 20123,
-            pageViews: 68345
-          },
-          {
-            deviceCategory: "Tablet",
-            totalUsers: 5678,
-            averageSessionDuration: 210,
-            engagedSessions: 4234,
-            pageViews: 12456
-          }
-        ]
-      },
-      events: {
-        topEvents: [
-          { eventName: "page_view", count: 128900, value: 1.0 },
-          { eventName: "sign_up", count: 2450, value: 5.0 },
-          { eventName: "purchase", count: 1280, value: 25.0 },
-          { eventName: "download", count: 3600, value: 2.0 },
-          { eventName: "contact_form", count: 890, value: 3.0 }
-        ]
-      }
+      websiteName: website.name,
+      summary,
+      ...formattedData
     };
 
+    
   } catch (error) {
     console.error("Error fetching analytics data", error);
     return {error :error.message};
